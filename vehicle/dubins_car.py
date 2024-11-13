@@ -15,16 +15,23 @@ class DubinsCar:
         self.theta = theta
         self.v = v
         self.L = L
+    
+        """Returns current state of the vehicle in numpy array
+        """
+    def get_state(self) -> np.array:
+        return np.array([self.x, self.y, self.theta, self.v])
 
     """Step the simulation of dynamics dt seconds forward
         param control_input: tuple of (velocity, steering angle)
         param dt: timestep to integrate
+
+        returns current vehicle state
     """
-    def step(self, control_input, dt):
+    def step(self, control_input, dt) -> np.array:
         self.v = control_input[0] # velocity of vehicle
         beta = control_input[1] # steering angle of vehicle
         self.x += self.v * np.cos(self.theta) * dt
         self.y += self.v * np.sin(self.theta) * dt
-        self.theta += self.v / self.length * np.tan(beta) * dt
+        self.theta += self.v / self.L * np.tan(beta) * dt
 
-        return self.x, self.y, self.theta
+        return self.get_state()
