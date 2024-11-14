@@ -7,7 +7,7 @@ from io import BytesIO
 from matplotlib.patches import Circle
 from matplotlib.animation import FuncAnimation
 
-def make_movie(trajectories, agent_pos):
+def make_movie(trajectories, estimated_trajectories, agent_pos):
     
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     out = cv2.VideoWriter('trajectories.mp4', fourcc, 3.0, (680, 480))
@@ -23,6 +23,8 @@ def make_movie(trajectories, agent_pos):
     ax.grid(True)
     lines = [ax.plot([], [], label=f'Trajectory {k + 1}')[0] for k in range(num_agents)]
     points = [ax.plot([], [], 'ko')[0] for _ in range(num_agents)]
+    estimated_lines = [ax.plot([], [], color = 'cyan',label=f'Trajectory {k + 1}')[0] for k in range(num_agents)]
+    estimated_points = [ax.plot([], [], 'ko')[0] for _ in range(num_agents)]
     # circles = [Circle((0, 0), 0.5, color='blue', fill=False) for _ in range(num_agents)]
     
     # Add circles to the plot
@@ -40,8 +42,10 @@ def make_movie(trajectories, agent_pos):
             # Update the current position as a black dot
             points[k].set_data(trajectories[k, frame, 0], trajectories[k, frame, 1])
             # Update circle position
-            # circles[k].center = agent_pos
-            circles[k].center = (trajectories[k, frame, 0], trajectories[k, frame, 1])
+            # circles[k].center = (trajectories[k, frame, 0], trajectories[k, frame, 1])
+
+            estimated_lines[k].set_data(estimated_trajectories[k, :frame + 1, 0], estimated_trajectories[k, :frame + 1, 1])
+            estimated_points[k].set_data(estimated_trajectories[k, frame, 0], estimated_trajectories[k, frame, 1])
         return lines + points + circles
 
     ani = FuncAnimation(fig, update, frames=num_steps, blit=True, repeat=False)
