@@ -7,12 +7,13 @@ from io import BytesIO
 from matplotlib.patches import Circle
 from matplotlib.animation import FuncAnimation
 
-def make_movie(trajectories):
+def make_movie(trajectories, agent_pos):
+    
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     out = cv2.VideoWriter('trajectories.mp4', fourcc, 3.0, (680, 480))
     num_agents, num_steps, _ = trajectories.shape
     fig, ax = plt.subplots()
-    
+    circles = [Circle((agent_pos[i,0], agent_pos[i,1]), 0.5, color='orange', fill=True) for i in range(agent_pos.shape[0])]
     # Set up plot limits
     ax.set_xlim(-20, 20)
     ax.set_ylim(-20, 20)
@@ -22,7 +23,7 @@ def make_movie(trajectories):
     ax.grid(True)
     lines = [ax.plot([], [], label=f'Trajectory {k + 1}')[0] for k in range(num_agents)]
     points = [ax.plot([], [], 'ko')[0] for _ in range(num_agents)]
-    circles = [Circle((0, 0), 0.5, color='blue', fill=False) for _ in range(num_agents)]
+    # circles = [Circle((0, 0), 0.5, color='blue', fill=False) for _ in range(num_agents)]
     
     # Add circles to the plot
     for circle in circles:
@@ -39,6 +40,7 @@ def make_movie(trajectories):
             # Update the current position as a black dot
             points[k].set_data(trajectories[k, frame, 0], trajectories[k, frame, 1])
             # Update circle position
+            # circles[k].center = agent_pos
             circles[k].center = (trajectories[k, frame, 0], trajectories[k, frame, 1])
         return lines + points + circles
 
