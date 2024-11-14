@@ -41,7 +41,7 @@ def sqp_update(x0, objective_func, observations, dynamics_func, measurement_func
     
     for _ in range(max_iters):
         # Define the local objective function with fixed observations and parameters
-        local_objective = lambda x: agent_objective(x.reshape(-1, 3), observations, dynamics_func, measurement_func, P_inv, Q_inv, L_inv, mu)
+        local_objective = lambda x: objective_func(x.reshape(-1, 3), observations, dynamics_func, measurement_func, P_inv, Q_inv, L_inv, mu)
         
         # Compute gradient
         grad_f = finite_difference_gradient(local_objective, x_traj.flatten())
@@ -74,6 +74,8 @@ def sqp_update(x0, objective_func, observations, dynamics_func, measurement_func
             break
 
     return x_traj
+
+
 
 def consensus_admm(
     agents_data,
@@ -124,6 +126,8 @@ def consensus_admm(
             break
 
     return z
+
+
 
 
 

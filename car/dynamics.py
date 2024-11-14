@@ -1,7 +1,7 @@
 import numpy as np
 L = 2.0  # Distance between front and rear axles (wheelbase)
 
-def dubins_car_dynamics(x, u, dt):
+def dubins_car_dynamics(x, u, dt=0.05):
     px, py, theta = x
     v, beta = u
     
@@ -12,7 +12,9 @@ def dubins_car_dynamics(x, u, dt):
     return np.array([px_next, py_next, theta_next])
 
 def measurement_model(agent_position, target_position, target_heading, noise_cov):
-   
+    '''
+    Applies the measurement model according to the paper
+    '''
     # Range measurement (distance)
     dx = target_position[0] - agent_position[0]
     dy = target_position[1] - agent_position[1]
