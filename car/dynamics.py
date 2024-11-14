@@ -29,3 +29,25 @@ def measurement_model(agent_position, target_position, target_heading, noise_cov
     
     return measurement
 
+def GenRef(alpha, beta):
+        v_lim = [-10,10]
+        delta_lim = [-0.8,0.8]
+        Dim_state = 3
+        Dim_ctrl = 2
+        Ns = 500
+        # generate a nominal trajectory
+        x_bar = np.zeros((Ns + 1, Dim_state))
+        u_bar = np.zeros((Ns    , Dim_ctrl))
+
+        for k in range(Ns):
+            u_act = np.array([ - 1 * (x_bar[k, 0] - 8 + 10 * np.sin(k / 20) + np.sin(k / np.sqrt(7)) ), 
+                               np.cos(k / 10 / alpha) * 0.5 + 0.5 * np.sin(k / 10 / np.sqrt(beta))])
+
+            u_act[0] = np.clip(u_act[0],  v_lim[0], v_lim[1])
+            u_act[1] = np.clip(u_act[1],  delta_lim[0], delta_lim[1])
+            
+            u_bar[k, :]     = np.squeeze(u_act)
+            x_bar[k + 1, :] = np.squeeze(dubins_car_dynamics(x_bar[k, :],   u_act))
+            
+        return u_bar, x_bar
+

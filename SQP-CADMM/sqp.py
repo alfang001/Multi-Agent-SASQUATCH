@@ -143,5 +143,5 @@ agents_data = [
 ]
 
 # Run consensus ADMM
-result = consensus_admm(agents_data)
-print("Consensus solution:", result)
+# result = consensus_admm(agents_data)
+# print("Consensus solution:", result)
