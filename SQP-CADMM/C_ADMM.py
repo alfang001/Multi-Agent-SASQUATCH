@@ -1,4 +1,14 @@
 import numpy as np
+import casadi as ca
+
+target_pos_ca = ca.SX.sym('x', 3)  # 2x1
+agent_pos_ca = ca.SX.sym('a', 2)  # 2x1
+distance = ca.SX.sym('d')     
+f =  distance**2 - (ca.norm_2(target_pos_ca[:2] - agent_pos_ca))**2
+phi = ca.Function('phi',[target_pos_ca,agent_pos_ca,distance],[f])
+df_dx = ca.gradient(f, target_pos_ca[:2])
+phi_derivative = ca.Function('f_derivative', [target_pos_ca, agent_pos_ca, distance], [df_dx])
+
 
 
 def agent_objective(x_traj, observations, dynamics_func, measurement_func, P_inv, Q_inv, L_inv, mu):
