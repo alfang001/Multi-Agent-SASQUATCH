@@ -22,8 +22,8 @@ adj_matrix = construct_matrix(agent_pos,R)
 def sqp_admm(adj_matrix, c_admm_max_iter = 200): #, c_admm_max_iter = 200
     rho = 1.0 #augmented laplacian parameter
     # local_estimates = np.random.randn(N, 3)
-    # x_traj = np.zeros((T, state_dim))  # Estimated trajectory, initialize to zeros
-    local_estimates = [np.random.rand(2) for _ in range(N)]  # Local copies of x
+    x_traj = np.zeros((T, state_dim))  # Estimated trajectory, initialize to zeros
+    local_estimates = [np.random.rand(3) for _ in range(N)]  # Local copies of x
     z = np.copy(local_estimates)  # Consensus variables
     lambda_ = [np.zeros(2) for _ in range(N)]  # Lagrange multipliers
     x_k = [np.random.rand(2) for _ in range(N)]
@@ -85,15 +85,16 @@ def sqp_admm(adj_matrix, c_admm_max_iter = 200): #, c_admm_max_iter = 200
                         lambda_[i][j] += rho * (local_estimates[i] - z[i])
             primal_residual = sum([np.linalg.norm(estimate_trajectory[i] - z[i]) for i in range(N)])
             dual_residual = sum([np.linalg.norm(z[i] - z[j]) for i in range(N) for j in range(N) if adj_matrix[i, j] == 1])
-
+            
             if (primal_residual < tolerance and dual_residual < tolerance):
                 print(f"Convergence reached at iteration {it}")
                 break
+            x_traj[t, :] = np.mean(z, axis=0)
         # if i > c_admm_max_iter:
         #     print("max iter reached")
         #     break
-    estimated_trajectory = local_estimates
-    return estimated_trajectory
+    
+    return x_traj
 def estimate_trajectory():
     return
 
@@ -101,7 +102,7 @@ def estimate_trajectory():
 
 u_bar, x_bar = GenRef(2,2)
 estimated_trajectory = sqp_admm(adj_matrix)
-
+# estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
 
 plt.figure()
 plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "reference")

@@ -34,9 +34,10 @@ def GenRef(alpha, beta):
         delta_lim = [-0.8,0.8]
         Dim_state = 3
         Dim_ctrl = 2
-        Ns = 500
+        Ns = 500 
         # generate a nominal trajectory
         x_bar = np.zeros((Ns + 1, Dim_state))
+        # x_bar = np.zeros((Ns, Dim_state))
         u_bar = np.zeros((Ns    , Dim_ctrl))
 
         for k in range(Ns):

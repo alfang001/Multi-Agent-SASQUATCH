@@ -41,7 +41,7 @@ def finite_difference_gradient(func, x, epsilon=1e-5):
         x_forward[i] += epsilon
         x_backward = np.copy(x)
         x_backward[i] -= epsilon
-        grad[i] = (func(x_forward) - func(x_backward)) / (2 * epsilon)
+        grad[i] = (func(x_forward,) - func(x_backward)) / (2 * epsilon)
     return grad
 
 def sqp_update(x0, objective_func, observations, dynamics_func, measurement_func, P_inv, Q_inv, L_inv, mu, max_iters=10):
