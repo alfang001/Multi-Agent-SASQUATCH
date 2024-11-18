@@ -16,8 +16,8 @@ def make_movie(trajectories, estimated_trajectories, agent_pos):
     fig, ax = plt.subplots()
     circles = [Circle((agent_pos[i,0], agent_pos[i,1]), 0.5, color='orange', fill=True) for i in range(agent_pos.shape[0])]
     # Set up plot limits
-    ax.set_xlim(-20, 20)
-    ax.set_ylim(-20, 20)
+    ax.set_xlim(-25, 25)
+    ax.set_ylim(-25, 25)
     ax.set_xlabel("x1")
     ax.set_ylabel("x2")
     ax.set_title("Trajectories with Safe and Goal Sets")

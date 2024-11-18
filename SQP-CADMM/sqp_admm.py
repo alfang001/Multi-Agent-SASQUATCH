@@ -21,7 +21,26 @@ from sqp import bfgs_update, finite_difference_gradient, phi, phi_derivative, sq
 
 from car.dynamics import GenRef, dubins_car_dynamics, measurement_model
 
-agent_pos = np.array(generate_agent_positions())
+RANDOM_AGENT_POSITIONS = False
+agent_pos = None
+if RANDOM_AGENT_POSITIONS:
+    agent_pos = np.array(generate_agent_positions())
+else:
+    agent_pos = np.array([[ 12.1963352,   1.06098963],
+                          [-14.25450931,  14.46508857],
+                          [  7.84518701,   3.59467897],
+                          [-18.72957036,  -8.31719137],
+                          [ 18.50598518,   9.05778272],
+                          [ 13.41889309, -12.52470382],
+                          [ 15.3046385, -12.71359545],
+                          [ 17.57478353,  16.482406  ],
+                          [ -7.43878265,  13.79861702],
+                          [  0.92628422,   8.84970075],
+                          [  4.82463956,  14.66585131],
+                          [ -1.32879671, -18.02390736],
+                          [  5.99543066, -19.16828873],
+                          [ -5.15530085, -14.07483531],
+                          [-19.48146272, -11.87149705]])
 R = 8
 T = 500  # Time horizon
 state_dim = 3  # [x_position, y_position, heading]
