@@ -1,6 +1,9 @@
+import random
+
+import networkx as nx
 import numpy as np
 from scipy.spatial.distance import euclidean
-import networkx as nx
+
 
 def construct_graph(pos_arr):
     G = nx.graph()
@@ -35,3 +38,17 @@ def get_neighbors(adj_matrix, i):
     neighbors = np.where(adj_matrix[i] == 1)[0]
     
     return neighbors.tolist()
+
+def generate_agent_positions():
+    agent_size = 0.25  # radius of the agent in meters
+    safe_distance = 2 * agent_size  # minimum allowed distance between agents
+    num_agents = 15
+    area_size = 40  # since we want to place agents between -20 to 20 in both x and y directions
+    agent_pos = []
+    
+    while len(agent_pos) < num_agents:
+        new_pos = (random.uniform(-area_size/2, area_size/2), random.uniform(-area_size/2, area_size/2))
+        # Check if new_pos is far enough from all existing positions
+        if all(np.linalg.norm(np.array(new_pos) - np.array(pos)) >= safe_distance for pos in agent_pos):
+            agent_pos.append(new_pos)
+    return np.array(agent_pos)

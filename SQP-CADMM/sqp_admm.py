@@ -9,13 +9,19 @@ import cvxpy as cp
 import matplotlib.pyplot as plt
 import numpy as np
 from C_ADMM import agent_objective
-from graph_utils import connected, construct_graph, construct_matrix, get_neighbors
+from graph_utils import (
+    connected,
+    construct_graph,
+    construct_matrix,
+    generate_agent_positions,
+    get_neighbors,
+)
 from movie import make_movie
 from sqp import bfgs_update, finite_difference_gradient, phi, phi_derivative, sqp_update
 
 from car.dynamics import GenRef, dubins_car_dynamics, measurement_model
 
-agent_pos = np.array([(random.uniform(-20,20),random.uniform(-20,20)) for _ in range(15)])
+agent_pos = np.array(generate_agent_positions())
 R = 8
 T = 500  # Time horizon
 state_dim = 3  # [x_position, y_position, heading]
