@@ -12,7 +12,7 @@ brew install pipenv
 
 Create the `pipenv` environment and activate the environment:
 ```bash
-pipenv --python 3.10
+pipenv --python 3.11
 pipenv shell
 pipenv install -r requirements.txt
 ```

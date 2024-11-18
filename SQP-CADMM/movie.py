@@ -1,11 +1,12 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
-import cv2
-from PIL import Image
 from io import BytesIO
-from matplotlib.patches import Circle
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.animation import FuncAnimation
+from matplotlib.patches import Circle
+from PIL import Image
+
 
 def make_movie(trajectories, estimated_trajectories, agent_pos):
     
@@ -40,12 +41,13 @@ def make_movie(trajectories, estimated_trajectories, agent_pos):
             # Update trajectory lines
             lines[k].set_data(trajectories[k, :frame + 1, 0], trajectories[k, :frame + 1, 1])
             # Update the current position as a black dot
-            points[k].set_data(trajectories[k, frame, 0], trajectories[k, frame, 1])
+            # import pdb; pdb.set_trace()
+            points[k].set_data([trajectories[k, frame, 0]], [trajectories[k, frame, 1]])
             # Update circle position
             # circles[k].center = (trajectories[k, frame, 0], trajectories[k, frame, 1])
 
             estimated_lines[k].set_data(estimated_trajectories[k, :frame + 1, 0], estimated_trajectories[k, :frame + 1, 1])
-            estimated_points[k].set_data(estimated_trajectories[k, frame, 0], estimated_trajectories[k, frame, 1])
+            estimated_points[k].set_data([estimated_trajectories[k, frame, 0]], [estimated_trajectories[k, frame, 1]])
         return lines + points + circles
 
     ani = FuncAnimation(fig, update, frames=num_steps, blit=True, repeat=False)
