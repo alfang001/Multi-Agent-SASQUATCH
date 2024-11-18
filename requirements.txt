@@ -1,2 +1,7 @@
 numpy
 matplotlib
+opencv-python
+scipy
+cvxpy
+networkx
+casadi
