@@ -1,15 +1,19 @@
-import sys, os
+import os
+import sys
+
 print(os.getcwd())
 sys.path.append(os.getcwd())
-from sqp import sqp_update, bfgs_update, finite_difference_gradient, phi, phi_derivative
-from C_ADMM import agent_objective
-from movie import make_movie
-from car.dynamics import dubins_car_dynamics, measurement_model, GenRef
-import matplotlib.pyplot as plt
 import random
-from graph_utils import get_neighbors, connected, construct_graph, construct_matrix
+
 import cvxpy as cp
+import matplotlib.pyplot as plt
 import numpy as np
+from C_ADMM import agent_objective
+from graph_utils import connected, construct_graph, construct_matrix, get_neighbors
+from movie import make_movie
+from sqp import bfgs_update, finite_difference_gradient, phi, phi_derivative, sqp_update
+
+from car.dynamics import GenRef, dubins_car_dynamics, measurement_model
 
 agent_pos = np.array([(random.uniform(-20,20),random.uniform(-20,20)) for _ in range(15)])
 R = 8
@@ -101,8 +105,8 @@ def estimate_trajectory():
 
 
 u_bar, x_bar = GenRef(2,2)
-estimated_trajectory = sqp_admm(adj_matrix)
-# estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
+# estimated_trajectory = sqp_admm(adj_matrix)
+estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
 
 plt.figure()
 plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "reference")
