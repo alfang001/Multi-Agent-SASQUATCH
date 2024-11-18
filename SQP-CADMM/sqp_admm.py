@@ -62,8 +62,8 @@ def sqp_admm(adj_matrix, c_admm_max_iter = 200): #, c_admm_max_iter = 200
                 local_estimates[i] = x_var.value
             for i in range(N):
                 # Compute new gradient at x[i]
-                grad_f_new = finite_difference_gradient(agent_objective, x_new[i])
-
+                grad_f_new = finite_difference_gradient(agent_objective, x_new[i],t)
+                assert(len(grad_f_new)==3)
                 # Compute s and y for BFGS
                 s = x_new[i] - x_k[i]
                 y = grad_f_new - grad_f[i]
@@ -101,8 +101,8 @@ def estimate_trajectory():
 
 
 u_bar, x_bar = GenRef(2,2)
-estimated_trajectory = sqp_admm(adj_matrix)
-# estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
+# estimated_trajectory = sqp_admm(adj_matrix)
+estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
 
 plt.figure()
 plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "reference")

@@ -43,7 +43,7 @@ def agent_objective(x_traj, observations, dynamics_func, measurement_func,mu=np.
         
         # Measurement term
         y_obs = observations[t]
-        y_pred = measurement_func([2.0, 2.0], x_traj[t][:2], x_traj[t][2], np.eye(2))  
+        y_pred = measurement_func(, x_traj[t][:2], x_traj[t][2], np.eye(2))  
         error = y_obs - y_pred
         cost += error.T @ Q_inv @ error
     

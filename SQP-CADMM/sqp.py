@@ -34,14 +34,20 @@ def bfgs_update(H, s, y):
     return H_next
 
 
-def finite_difference_gradient(func, x, epsilon=1e-5):
-    grad = np.zeros_like(x)
-    for i in range(len(x)):
-        x_forward = np.copy(x)
+def finite_difference_gradient(func, x, t, epsilon=1e-5):
+    # grad = np.zeros_like(x)
+    grad = np.zero(x[t].shape)
+    assert(len(x[0])==3)
+    for i in range(len(x[0])):
+        x_forward = np.copy(x[t])
         x_forward[i] += epsilon
-        x_backward = np.copy(x)
+        x_backward = np.copy(x[t])
         x_backward[i] -= epsilon
-        grad[i] = (func(x_forward,) - func(x_backward)) / (2 * epsilon)
+        x_forward_arr = np.copy(x)
+        x_backward_arr = np.copy(x)
+        x_forward_arr[t] = x_forward
+        x_backward_arr[t] = x_backward
+        grad[i] = (func(x_forward_arr, ) - func(x_backward_arr, )) / (2 * epsilon)
     return grad
 
 def sqp_update(x0, objective_func, observations, dynamics_func, measurement_func, P_inv, Q_inv, L_inv, mu, max_iters=10):
