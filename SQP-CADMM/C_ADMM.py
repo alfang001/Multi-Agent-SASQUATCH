@@ -7,7 +7,7 @@ f =  distance**2 - (ca.norm_2(target_pos_ca[:2] - agent_pos_ca))**2
 phi = ca.Function('phi',[target_pos_ca,agent_pos_ca,distance],[f])
 df_dx = ca.gradient(f, target_pos_ca[:2])
 phi_derivative = ca.Function('f_derivative', [target_pos_ca, agent_pos_ca, distance], [df_dx])
-def agent_objective(x_traj, observations, dynamics_func, measurement_func,mu=np.zeros(3)):
+def agent_objective(x_traj, observations, dynamics_func, measurement_func,agent_pos,mu=np.zeros(3)):
     """
     Objective function for each agent to minimize based on observations and dynamics.
     
@@ -43,7 +43,7 @@ def agent_objective(x_traj, observations, dynamics_func, measurement_func,mu=np.
         
         # Measurement term
         y_obs = observations[t]
-        y_pred = measurement_func([2.0, 2.0], x_traj[t][:2], x_traj[t][2], np.eye(2))  
+        y_pred = measurement_func(agent_pos, x_traj[t][:2], x_traj[t][2], np.eye(2))  
         error = y_obs - y_pred
         cost += error.T @ Q_inv @ error
     

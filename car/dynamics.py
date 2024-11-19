@@ -29,20 +29,38 @@ def measurement_model(agent_position, target_position, target_heading, noise_cov
     
     return measurement
 
-def GenRef(alpha, beta):
+def compute_measurements(agent_pos, ref_trajectory, noise = np.array([[0.1**2,0],[0,0.02**2]])):
+    T = len(ref_trajectory)
+    N = agent_pos.shape[0]
+    measurements = np.zeros((T,N))
+    
+    for t in range(T):
+        for j in range(N):
+            measurements[t,j] = measurement_model(agent_pos[j], ref_trajectory[t,:2],ref_trajectory[t,2], noise)[0]
+
+    return measurements
+
+def GenRef(alpha, beta, Ns = 500):
         v_lim = [-10,10]
         delta_lim = [-0.8,0.8]
         Dim_state = 3
         Dim_ctrl = 2
-        Ns = 500 
+        
         # generate a nominal trajectory
         x_bar = np.zeros((Ns + 1, Dim_state))
         # x_bar = np.zeros((Ns, Dim_state))
         u_bar = np.zeros((Ns    , Dim_ctrl))
 
         for k in range(Ns):
-            u_act = np.array([ - 1 * (x_bar[k, 0] - 8 + 10 * np.sin(k / 20) + np.sin(k / np.sqrt(7)) ), 
-                               np.cos(k / 10 / alpha) * 0.5 + 0.5 * np.sin(k / 10 / np.sqrt(beta))])
+            # u_act = np.array([ - 1 * (x_bar[k, 0] - 8 + 10 * np.sin(k / 20) + np.sin(k / np.sqrt(7)) ), 
+            #                    np.cos(k / 10 / alpha) * 0.5 + 0.5 * np.sin(k / 10 / np.sqrt(beta))])
+
+            v = 8.0
+            amplitude = 5
+            frequency = 1
+            dt = 0.05
+            beta = amplitude * np.sin(2 * np.pi * frequency * k * dt)
+            u_act = np.array([v, beta])
 
             u_act[0] = np.clip(u_act[0],  v_lim[0], v_lim[1])
             u_act[1] = np.clip(u_act[1],  delta_lim[0], delta_lim[1])
