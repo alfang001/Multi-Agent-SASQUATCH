@@ -21,11 +21,16 @@ from sqp import bfgs_update, finite_difference_gradient, phi, phi_derivative, sq
 
 from car.dynamics import GenRef, dubins_car_dynamics, measurement_model
 
+# Flag used to denote if the agent positions are randomly generated or not
 RANDOM_AGENT_POSITIONS = False
 agent_pos = None
+
+# Set the agent positions
 if RANDOM_AGENT_POSITIONS:
     agent_pos = np.array(generate_agent_positions())
 else:
+    # These poses came from a random generation of 15 agents and we 
+    # saved the poses.
     agent_pos = np.array([[ 12.1963352,   1.06098963],
                           [-14.25450931,  14.46508857],
                           [  7.84518701,   3.59467897],
@@ -41,6 +46,8 @@ else:
                           [  5.99543066, -19.16828873],
                           [ -5.15530085, -14.07483531],
                           [-19.48146272, -11.87149705]])
+
+# Problem parameters
 R = 8
 T = 500  # Time horizon
 state_dim = 3  # [x_position, y_position, heading]
@@ -48,7 +55,18 @@ N = 15
 tolerance = 1e-4
 distance = 1.5
 adj_matrix = construct_matrix(agent_pos,R)
-def sqp_admm(adj_matrix, c_admm_max_iter = 200): #, c_admm_max_iter = 200
+
+
+def sqp_admm(adj_matrix: np.array, c_admm_max_iter=200) -> np.array:
+    """Runs the SQP-CADMM algorithm to estimate the trajectory of the agents.
+
+    Args:
+        adj_matrix (np.array): Array representing the adjacency matrix of the agents.
+        c_admm_max_iter (int, optional): Max iterations to run. Defaults to 200.
+
+    Returns:
+        np.array: Array representing the estimated trajectory of the tracked vehicle.
+    """
     rho = 1.0 #augmented laplacian parameter
     # local_estimates = np.random.randn(N, 3)
     x_traj = np.zeros((T, state_dim))  # Estimated trajectory, initialize to zeros
@@ -124,11 +142,12 @@ def sqp_admm(adj_matrix, c_admm_max_iter = 200): #, c_admm_max_iter = 200
         #     break
     
     return x_traj
+
 def estimate_trajectory():
     return
 
 
-
+# Generate reference trajectory
 u_bar, x_bar = GenRef(2,2)
 # estimated_trajectory = sqp_admm(adj_matrix)
 estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
