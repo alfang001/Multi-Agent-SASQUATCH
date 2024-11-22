@@ -73,8 +73,8 @@ def sqp_admm(adj_matrix: np.array, c_admm_max_iter=200) -> np.array:
     local_estimates = [np.random.rand(3) for _ in range(N)]  # Local copies of x
     z = np.copy(local_estimates)  # Consensus variables
     lambda_ = [np.zeros(2) for _ in range(N)]  # Lagrange multipliers
-    x_k = [np.random.rand(2) for _ in range(N)]
-    H = np.eye(state_dim)
+    x_k = [np.random.rand(3) for _ in range(N)]
+    H = [np.eye(state_dim) for _ in range(N)] 
     for t in range(T):
         # new_x = np.copy(local_estimates)
         for it in range(c_admm_max_iter):
@@ -85,9 +85,7 @@ def sqp_admm(adj_matrix: np.array, c_admm_max_iter=200) -> np.array:
                 neighbors = get_neighbors(adj_matrix, i)
                 phi_i = phi(x_k[i],agent_pos[i],distance)
                 grad_phi_i = phi_derivative(x_k[i],agent_pos[i],distance)
-                # s = 
-                # y = 
-                # H = bfgs_update(H, (local_estimates[i] - x_k[t]),)
+                
                 obj = (
                     grad_f[i].T @ (x_var - x_k[i]) +
                     0.5 * cp.quad_form(x_var - x_k[i], H[i]) +
@@ -96,12 +94,12 @@ def sqp_admm(adj_matrix: np.array, c_admm_max_iter=200) -> np.array:
                 )
                 objective = cp.Minimize(obj)
 
-                # Define the constraints
+                
                 constraints = [
                     grad_phi_i.T @ (x_var - x_k[i]) + phi_i <= 0
                 ]
 
-                # Solve the optimization problem
+                
                 prob = cp.Problem(objective, constraints)
                 prob.solve()
                 x_new.append(x_var.value)
@@ -111,14 +109,12 @@ def sqp_admm(adj_matrix: np.array, c_admm_max_iter=200) -> np.array:
                 # Compute new gradient at x[i]
                 grad_f_new = finite_difference_gradient(agent_objective, x_new[i],t)
                 assert(len(grad_f_new)==3)
-                # Compute s and y for BFGS
+                
                 s = x_new[i] - x_k[i]
                 y = grad_f_new - grad_f[i]
 
-                # Update Hessian H[i] with BFGS
-                H[i] = bfgs_update(H[i], s, y)
                 
-
+                H[i] = bfgs_update(H[i], s, y)
                 # Update x_k[i] to the new x value for the next iteration
                 x_k[i] = x_new[i]
             for i in range(N):

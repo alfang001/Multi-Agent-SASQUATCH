@@ -24,7 +24,7 @@ def make_movie(trajectories, estimated_trajectories, agent_pos):
     ax.grid(True)
     lines = [ax.plot([], [], label=f'Trajectory {k + 1}')[0] for k in range(num_agents)]
     points = [ax.plot([], [], 'ko')[0] for _ in range(num_agents)]
-    estimated_lines = [ax.plot([], [], color = 'cyan',label=f'Trajectory {k + 1}')[0] for k in range(num_agents)]
+    estimated_lines = [ax.plot([], [], color = 'orange',label=f'Trajectory {k + 1}')[0] for k in range(num_agents)]
     estimated_points = [ax.plot([], [], 'ko')[0] for _ in range(num_agents)]
     # circles = [Circle((0, 0), 0.5, color='blue', fill=False) for _ in range(num_agents)]
     
@@ -48,7 +48,7 @@ def make_movie(trajectories, estimated_trajectories, agent_pos):
 
             estimated_lines[k].set_data(estimated_trajectories[k, :frame + 1, 0], estimated_trajectories[k, :frame + 1, 1])
             estimated_points[k].set_data([estimated_trajectories[k, frame, 0]], [estimated_trajectories[k, frame, 1]])
-        return lines + points + circles
+        return lines + points + circles+estimated_lines+estimated_points
 
     ani = FuncAnimation(fig, update, frames=num_steps, blit=True, repeat=False)
     

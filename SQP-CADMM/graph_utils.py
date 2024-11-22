@@ -3,8 +3,32 @@ import random
 import networkx as nx
 import numpy as np
 from scipy.spatial.distance import euclidean
-
-
+import networkx as nx
+def compute_weights(pos_arr,R):
+    weights = np.zeros((pos_arr.shape[0],))
+    for i in range( pos_arr.shape[0] ):
+        wi = 0
+        coord1 = pos_arr[i]
+        for j in range( pos_arr.shape[0] ):
+            coord2 = pos_arr[j]
+            if i != j and connected(coord1, coord2,R):
+                wi = wi +1
+        if wi != 0:
+            weights[i] = 1/(wi+1)
+    return weights
+# def compute_weights_sensing(measurement, pos_arr,R ,sensing_range=15):
+    
+#     weights = np.zeros((pos_arr.shape[0],))
+#     for i in range( pos_arr.shape[0] ):
+#         wi = 0
+#         coord1 = pos_arr[i]
+#         for j in range( pos_arr.shape[0] ):
+#             coord2 = pos_arr[j]
+#             if i != j and connected(coord1, coord2,R):
+#                 wi = wi +1
+#         if wi != 0:
+#             weights[i] = 1/(wi+1)
+#     return weights
 def construct_graph(pos_arr):
     G = nx.graph()
     G.add_nodes_from(range(pos_arr.shape[0]))
