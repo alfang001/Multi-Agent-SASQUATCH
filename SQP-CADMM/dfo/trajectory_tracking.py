@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.getcwd(),"SQP-CADMM"))
 
 import matplotlib.pyplot as plt
 import numpy as np
+from constants import *
 from dfo import distributed_optimize
 from graph_utils import compute_weights, construct_matrix
 from movie import make_movie
@@ -45,36 +46,41 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory):
         estimated_trajectory.append(estimated_coord)
     return estimated_trajectory
 
-estimated_trajectory = np.array(trajectory_tracking(agent_pos, x_bar))
+agent_positions = [agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
 
-# Plotting results
-plt.figure()
+for sim_run in range(6):
+    curr_agent_pos = agent_positions[sim_run]
+    estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar))
 
-# Plotting reference and estimated trajectories
-plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
-plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
+    # Plotting results
+    plt.figure()
 
-# Plot the agents and the communication channels
-adj_matrix = construct_matrix(agent_pos,R=R)
-first_line = True
-for i in range(adj_matrix.shape[0]):
-    for j in range(adj_matrix.shape[1]):
-        if adj_matrix[i,j] == 1:
-            if first_line:
-                first_line = False
-                plt.plot([agent_pos[i,0],agent_pos[j,0]],[agent_pos[i,1],agent_pos[j,1]], color = 'blue', label = "Channel")
-            else:
-                plt.plot([agent_pos[i,0],agent_pos[j,0]],[agent_pos[i,1],agent_pos[j,1]], color = 'blue')
-plt.plot(agent_pos[:,0], agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
+    # Plotting reference and estimated trajectories
+    plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
+    plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
 
-# Making the plot look nice
-plt.legend()
-plt.xlabel('X Coordinate (meters)')
-plt.ylabel('Y Coordinate (meters)')
-plt.title('Trajectory Tracking with SQP-CADMM')
-plt.grid(True)
-plt.show()
-# import pdb; pdb.set_trace()
+    # Plot the agents and the communication channels
+    adj_matrix = construct_matrix(curr_agent_pos,R=R)
+    first_line = True
+    for i in range(adj_matrix.shape[0]):
+        for j in range(adj_matrix.shape[1]):
+            if adj_matrix[i,j] == 1:
+                if first_line:
+                    first_line = False
+                    plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel")
+                else:
+                    plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue')
+    plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
 
-# Make animation of the trajectories
-make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), agent_pos)
+    # Making the plot look nice
+    plt.legend()
+    plt.xlabel('X Coordinate (meters)')
+    plt.ylabel('Y Coordinate (meters)')
+    plt.title('Trajectory Tracking with SQP-CADMM')
+    plt.grid(True)
+    plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
+    plt.show()
+
+
+    # Make animation of the trajectories
+    make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
