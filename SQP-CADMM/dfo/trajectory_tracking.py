@@ -21,7 +21,7 @@ T = len(x_bar) # Number of time steps
 state_dim = len(x_bar[0])
 # agent_pos = np.array([(random.uniform(-20,20),random.uniform(-20,20)) for _ in range(15)])
 # agent_pos = np.hstack((np.arange(-5,7,1).reshape(-1,1), -2*np.ones((12,)).reshape(-1,1)))
-agent_index = np.arange(0,12,1)
+agent_index = np.arange(0,N,1)
 agent_pos = np.hstack((20/2*np.cos(2*np.pi/N *agent_index).reshape(-1,1), 20/2*np.sin(2*np.pi/N *agent_index).reshape(-1,1)))
 # estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
 
