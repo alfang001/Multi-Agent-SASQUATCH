@@ -3,7 +3,8 @@ import random
 import networkx as nx
 import numpy as np
 from scipy.spatial.distance import euclidean
-import networkx as nx
+
+
 def compute_weights(pos_arr,R):
     weights = np.zeros((pos_arr.shape[0],))
     for i in range( pos_arr.shape[0] ):
