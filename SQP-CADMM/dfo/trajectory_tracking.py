@@ -51,7 +51,7 @@ estimated_trajectory = np.array(trajectory_tracking(agent_pos, x_bar))
 plt.figure()
 
 # Plotting reference and estimated trajectories
-plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
+plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', color='black', label = "Reference Trajectory")
 plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
 
 # Plot the agents and the communication channels
