@@ -16,8 +16,8 @@ u_bar, x_bar = GenRef(2,2,Ns=50)
 N=15
 sensing_range = 15
 R=10
-# x_bar = x_bar[::10]
-x_bar = x_bar[:50,:]
+
+
 T = len(x_bar)
 state_dim = len(x_bar[0])
 # agent_pos = np.array([(random.uniform(-20,20),random.uniform(-20,20)) for _ in range(15)])
