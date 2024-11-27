@@ -14,19 +14,8 @@ from movie import make_movie
 
 from car.dynamics import GenRef, compute_measurements
 
-# Setting reference trajectory and parameters
-u_bar, x_bar = GenRef(2,2,Ns=50)
-N=15 # Number of agents
-R=10 # Sensing radius
-T = len(x_bar) # Number of time steps
-state_dim = len(x_bar[0])
-# agent_pos = np.array([(random.uniform(-20,20),random.uniform(-20,20)) for _ in range(15)])
-# agent_pos = np.hstack((np.arange(-5,7,1).reshape(-1,1), -2*np.ones((12,)).reshape(-1,1)))
-agent_index = np.arange(0,N,1)
-agent_pos = np.hstack((20/2*np.cos(2*np.pi/N *agent_index).reshape(-1,1), 20/2*np.sin(2*np.pi/N *agent_index).reshape(-1,1)))
-# estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
 
-def trajectory_tracking(agent_pos: np.array, ref_trajectory):
+def trajectory_tracking(agent_pos: np.array, ref_trajectory, sensing_radius: float = 10) -> np.array:
     """Tracks trajectory of a vehicle following the reference trajectory.
 
     Args:
@@ -36,8 +25,9 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory):
     Returns:
         np.array: Array containing the estimated trajectory at certain time steps
     """
-    connectivity_matrix = construct_matrix (agent_pos,R=R)
-    weights = compute_weights(agent_pos, R=R)
+    T = len(ref_trajectory) # Number of time steps
+    connectivity_matrix = construct_matrix (agent_pos,R=sensing_radius)
+    weights = compute_weights(agent_pos, R=sensing_radius)
     measurements = compute_measurements(agent_pos, ref_trajectory)
     estimated_trajectory = []
     for t in range(T):
@@ -46,41 +36,56 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory):
         estimated_trajectory.append(estimated_coord)
     return estimated_trajectory
 
-agent_positions = [agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
+def main():
+    # Setting reference trajectory and parameters
+    u_bar, x_bar = GenRef(2,2,Ns=50)
+    R=10 # Sensing radius
+    N=15 # Number of agents
+    T = len(x_bar) # Number of time steps
+    state_dim = len(x_bar[0])
+    # agent_pos = np.array([(random.uniform(-20,20),random.uniform(-20,20)) for _ in range(15)])
+    # agent_pos = np.hstack((np.arange(-5,7,1).reshape(-1,1), -2*np.ones((12,)).reshape(-1,1)))
+    agent_index = np.arange(0,N,1)
+    agent_pos = np.hstack((20/2*np.cos(2*np.pi/N *agent_index).reshape(-1,1), 20/2*np.sin(2*np.pi/N *agent_index).reshape(-1,1)))
+    # estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
+    agent_positions = [agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
 
-for sim_run in range(6):
-    curr_agent_pos = agent_positions[sim_run]
-    estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar))
+    for sim_run in range(6):
+        curr_agent_pos = agent_positions[sim_run]
+        estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar, R))
 
-    # Plotting results
-    plt.figure()
+        # Plotting results
+        plt.figure()
 
-    # Plotting reference and estimated trajectories
-    plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
-    plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
+        # Plotting reference and estimated trajectories
+        plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
+        plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
 
-    # Plot the agents and the communication channels
-    adj_matrix = construct_matrix(curr_agent_pos,R=R)
-    first_line = True
-    for i in range(adj_matrix.shape[0]):
-        for j in range(adj_matrix.shape[1]):
-            if adj_matrix[i,j] == 1:
-                if first_line:
-                    first_line = False
-                    plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel")
-                else:
-                    plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue')
-    plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
+        # Plot the agents and the communication channels
+        adj_matrix = construct_matrix(curr_agent_pos,R=R)
+        first_line = True
+        for i in range(adj_matrix.shape[0]):
+            for j in range(adj_matrix.shape[1]):
+                if adj_matrix[i,j] == 1:
+                    if first_line:
+                        first_line = False
+                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel")
+                    else:
+                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue')
+        plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
 
-    # Making the plot look nice
-    plt.legend()
-    plt.xlabel('X Coordinate (meters)')
-    plt.ylabel('Y Coordinate (meters)')
-    plt.title('Trajectory Tracking with SQP-CADMM')
-    plt.grid(True)
-    plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
-    plt.show()
+        # Making the plot look nice
+        plt.legend()
+        plt.xlabel('X Coordinate (meters)')
+        plt.ylabel('Y Coordinate (meters)')
+        plt.title('Trajectory Tracking with SQP-CADMM')
+        plt.grid(True)
+        plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
+        plt.show()
 
 
-    # Make animation of the trajectories
-    make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
+        # Make animation of the trajectories
+        make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
+
+if __name__ == "__main__":
+    main()
