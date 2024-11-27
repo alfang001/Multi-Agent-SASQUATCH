@@ -11,6 +11,7 @@ from constants import *
 from dfo import distributed_optimize
 from graph_utils import compute_weights, construct_matrix
 from movie import make_movie
+from utils import calculate_rmse
 
 from car.dynamics import GenRef, compute_measurements
 
@@ -54,6 +55,10 @@ def main():
         curr_agent_pos = agent_positions[sim_run]
         estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar, R))
 
+        # Calculate the error
+        rmse = calculate_rmse(estimated_trajectory, x_bar[:, :2])
+        print(f"RMSE: {rmse}")
+        
         # Plotting results
         plt.figure()
 

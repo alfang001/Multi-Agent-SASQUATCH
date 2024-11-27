@@ -1,5 +1,6 @@
 import casadi as ca
 import numpy as np
+
 # Step 1: define casadi variables
 x = ca.SX.sym('x', 2)  # 2x1
 a = ca.SX.sym('a', 2)  # 2x1
@@ -13,4 +14,14 @@ df_dx = ca.gradient(f, x)
 
 f_derivative = ca.Function('f_derivative', [x, a, b], [df_dx])
 
+def calculate_rmse(estimate, reference):
+    """Calculates the RMSE between the estimate and reference.
 
+    Args:
+        estimate (np.array): estimate
+        reference (np.array): actual
+
+    Returns:
+        float: RMSE
+    """
+    return np.sqrt(np.mean((estimate - reference)**2))
