@@ -11,6 +11,7 @@ from constants import *
 from dfo import distributed_optimize
 from graph_utils import compute_weights, construct_matrix
 from movie import make_movie
+from scipy.spatial.distance import directed_hausdorff
 from utils import calculate_rmse
 
 from car.dynamics import GenRef, compute_measurements
@@ -58,7 +59,13 @@ def main():
         # Calculate the error
         rmse = calculate_rmse(estimated_trajectory, x_bar[:, :2])
         print(f"RMSE: {rmse}")
-        
+
+        # Calculate the Hausdorff distance, which is the furthest distance between the two trajectories
+        # Note: we use the max since we want tghe furthest distance between the two trajectories, whereas
+        # only taking one of the results is a directed Hausdorff distance.
+        hausdorff_distance = max(directed_hausdorff(estimated_trajectory, x_bar[:, :2])[0], directed_hausdorff(x_bar[:, :2], estimated_trajectory)[0])
+        print(f"General Hausdorff Distance: {hausdorff_distance}")
+
         # Plotting results
         plt.figure()
 
