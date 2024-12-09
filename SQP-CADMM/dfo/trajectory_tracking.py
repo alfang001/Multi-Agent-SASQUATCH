@@ -60,7 +60,7 @@ def main():
         [4, -7],
         [2, -6]
     ])
-    u_bar, x_bar = GenRef2(checkpoints,Ns=250)
+    u_bar, x_bar = GenRef2(checkpoints,Ns=125)
     R=10 # Sensing radius
     N=15 # Number of agents
     T = len(x_bar) # Number of time steps
@@ -70,56 +70,60 @@ def main():
     agent_index = np.arange(0,N,1)
     agent_pos = np.hstack((20/2*np.cos(2*np.pi/N *agent_index).reshape(-1,1), 20/2*np.sin(2*np.pi/N *agent_index).reshape(-1,1)))
     # estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
-    agent_positions = [PAPER_AGENT_POS, agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
+    agent_positions = [PAPER_AGENT_POS] #, agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
+    r_vals = [10, 8.5, 12, 14.5, 20]
 
     for sim_run in range(len(agent_positions)):
-        curr_agent_pos = agent_positions[sim_run]
-        estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar, R))
+        for r in r_vals:
+            R = r
+            curr_agent_pos = agent_positions[sim_run]
+            estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar, R))
 
-        # Calculate the error
-        rmse = calculate_rmse(estimated_trajectory, x_bar[:, :2])
-        print(f"RMSE: {rmse}")
+            # Calculate the error
+            rmse = calculate_rmse(estimated_trajectory, x_bar[:, :2])
+            print(f"RMSE: {rmse}")
 
-        # Calculate the Hausdorff distance, which is the furthest distance between the two trajectories
-        # Note: we use the max since we want tghe furthest distance between the two trajectories, whereas
-        # only taking one of the results is a directed Hausdorff distance.
-        hausdorff_distance = max(directed_hausdorff(estimated_trajectory, x_bar[:, :2])[0], directed_hausdorff(x_bar[:, :2], estimated_trajectory)[0])
-        print(f"General Hausdorff Distance: {hausdorff_distance}")
+            # Calculate the Hausdorff distance, which is the furthest distance between the two trajectories
+            # Note: we use the max since we want tghe furthest distance between the two trajectories, whereas
+            # only taking one of the results is a directed Hausdorff distance.
+            hausdorff_distance = max(directed_hausdorff(estimated_trajectory, x_bar[:, :2])[0], directed_hausdorff(x_bar[:, :2], estimated_trajectory)[0])
+            print(f"General Hausdorff Distance: {hausdorff_distance}")
 
-        # Plotting results
-        plt.figure()
+            # Plotting results
+            plt.figure()
 
-        # Plotting reference and estimated trajectories
-        plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
-        plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
+            # Plotting reference and estimated trajectories
+            plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
+            plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
 
-        # Plot the agents and the communication channels
-        adj_matrix = construct_matrix(curr_agent_pos,R=R)
-        first_line = True
-        for i in range(adj_matrix.shape[0]):
-            for j in range(adj_matrix.shape[1]):
-                if adj_matrix[i,j] == 1:
-                    if first_line:
-                        first_line = False
-                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel", alpha = 0.25)
-                    else:
-                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', alpha = 0.25)
-        plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
+            # Plot the agents and the communication channels
+            adj_matrix = construct_matrix(curr_agent_pos,R=R)
+            first_line = True
+            for i in range(adj_matrix.shape[0]):
+                for j in range(adj_matrix.shape[1]):
+                    if adj_matrix[i,j] == 1:
+                        if first_line:
+                            first_line = False
+                            plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel", alpha = 0.25)
+                        else:
+                            plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', alpha = 0.25)
+            plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
 
-        # Making the plot look nice
-        plt.legend()
-        plt.xlabel('X Coordinate (meters)')
-        plt.ylabel('Y Coordinate (meters)')
-        plt.title('Trajectory Tracking with SQP-CADMM')
-        plt.xlim(-25, 25)
-        plt.ylim(-25, 25)
-        plt.grid(True)
-        plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
-        plt.show()
+            # Making the plot look nice
+            plt.legend()
+            plt.xlabel('X Coordinate (meters)')
+            plt.ylabel('Y Coordinate (meters)')
+            plt.title(f'Trajectory Tracking with SQP-CADMM, Connection Radius={R}')
+            plt.xlim(-25, 25)
+            plt.ylim(-25, 25)
+            plt.grid(True)
+            # plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
+            plt.savefig(f'data/trajectory_tracking_r_{R}.png')
+            plt.show()
 
 
-        # Make animation of the trajectories
-        make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
+            # Make animation of the trajectories
+            make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
 
 if __name__ == "__main__":
     main()
