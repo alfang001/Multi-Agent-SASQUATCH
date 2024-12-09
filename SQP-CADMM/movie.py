@@ -61,7 +61,7 @@ def make_movie(trajectories, estimated_trajectories, agent_pos):
             estimated_points[k].set_data([estimated_trajectories[k, frame, 0]], [estimated_trajectories[k, frame, 1]])
         return lines + points + circles+estimated_lines+estimated_points
 
-    ani = FuncAnimation(fig, update, frames=num_steps, blit=True, repeat=False)
+    ani = FuncAnimation(fig, update, frames=num_steps, blit=True, repeat=True)
     
     # To save the animation, you can use the following line:
     # ani.save('trajectories.mp4', writer='ffmpeg')

@@ -14,7 +14,7 @@ from movie import make_movie
 from scipy.spatial.distance import directed_hausdorff
 from utils import calculate_rmse
 
-from car.dynamics import GenRef, compute_measurements
+from car.dynamics import GenRef, GenRef2, compute_measurements
 
 
 def trajectory_tracking(agent_pos: np.array, ref_trajectory, sensing_radius: float = 10) -> np.array:
@@ -40,7 +40,27 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory, sensing_radius: flo
 
 def main():
     # Setting reference trajectory and parameters
-    u_bar, x_bar = GenRef(2,2,Ns=50)
+    # u_bar, x_bar = GenRef(2,2,Ns=50)
+    checkpoints = np.array([
+        [-15, 4.5],
+        [-8, 7],
+        [-4, 7],
+        [0, 6.8],
+        [4, 6.2],
+        [8, 5.5],
+        [8.3, 5.0],
+        [8.7, 4.5],
+        [11, 2.3],
+        [12.5, 0.0],
+        [11, -2.0],
+        [10, -7],
+        [7.5, -7.5],
+        [6, -7.4],
+        [5, -8],
+        [4, -7],
+        [2, -6]
+    ])
+    u_bar, x_bar = GenRef2(checkpoints,Ns=250)
     R=10 # Sensing radius
     N=15 # Number of agents
     T = len(x_bar) # Number of time steps
@@ -50,9 +70,9 @@ def main():
     agent_index = np.arange(0,N,1)
     agent_pos = np.hstack((20/2*np.cos(2*np.pi/N *agent_index).reshape(-1,1), 20/2*np.sin(2*np.pi/N *agent_index).reshape(-1,1)))
     # estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
-    agent_positions = [agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
+    agent_positions = [PAPER_AGENT_POS, agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
 
-    for sim_run in range(6):
+    for sim_run in range(len(agent_positions)):
         curr_agent_pos = agent_positions[sim_run]
         estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar, R))
 
@@ -81,9 +101,9 @@ def main():
                 if adj_matrix[i,j] == 1:
                     if first_line:
                         first_line = False
-                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel")
+                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel", alpha = 0.25)
                     else:
-                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue')
+                        plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', alpha = 0.25)
         plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
 
         # Making the plot look nice
@@ -91,6 +111,8 @@ def main():
         plt.xlabel('X Coordinate (meters)')
         plt.ylabel('Y Coordinate (meters)')
         plt.title('Trajectory Tracking with SQP-CADMM')
+        plt.xlim(-25, 25)
+        plt.ylim(-25, 25)
         plt.grid(True)
         plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
         plt.show()

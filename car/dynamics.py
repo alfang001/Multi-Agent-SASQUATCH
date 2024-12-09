@@ -1,4 +1,5 @@
 import numpy as np
+
 L = 2.0  # Distance between front and rear axles (wheelbase)
 
 def dubins_car_dynamics(x, u, dt=0.05):
@@ -69,4 +70,28 @@ def GenRef(alpha, beta, Ns = 500):
             x_bar[k + 1, :] = np.squeeze(dubins_car_dynamics(x_bar[k, :],   u_act))
             
         return u_bar, x_bar
+
+def GenRef2(checkpoints, Ns=500):
+    """Given a set of cheeckpoints, generate a trajectory with Ns points
+
+    Args:
+        checkpoints (np.array): Array of checkpoints, each row is a checkpoint (x,y)
+        Ns (int, optional): number of steps/points in trajectory. Defaults to 500.
+    
+    Returns:
+        np.array: Generated trajectory with Ns points
+    """
+    v_lim = [-10,10]
+    delta_lim = [-0.8,0.8]
+    Dim_state = 3
+    Dim_ctrl = 2
+    
+    x_bar = np.zeros((Ns + 1, Dim_state))
+    u_bar = np.zeros((Ns, Dim_ctrl))
+
+    # Interpolate between checkpoints and make sure x_bar has Ns + 1 points
+    x_bar[:, 0] = np.interp(np.linspace(0, Ns, Ns + 1), np.arange(checkpoints.shape[0]), checkpoints[:, 0])
+    x_bar[:, 1] = np.interp(np.linspace(0, Ns, Ns + 1), np.arange(checkpoints.shape[0]), checkpoints[:, 1])
+
+    return u_bar, x_bar
 
