@@ -34,7 +34,7 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory, sensing_radius: flo
     measurements = compute_measurements(agent_pos, ref_trajectory)
     estimated_trajectory = []
     for t in range(T):
-        estimated_coord = distributed_optimize(measurements[t], connectivity_matrix, weights, agent_pos, max_iter=500)
+        estimated_coord = distributed_optimize(measurements[t], connectivity_matrix, weights, agent_pos, max_iter=500, error=0.1, break_early=False)
         estimated_coord = np.mean(estimated_coord, axis=0)
         estimated_trajectory.append(estimated_coord)
     return estimated_trajectory
