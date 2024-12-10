@@ -1,5 +1,6 @@
 import os
 import sys
+from time import time
 
 print(os.getcwd())
 sys.path.append(os.getcwd())
@@ -72,12 +73,15 @@ def main():
     # estimated_trajectory = np.zeros((x_bar.shape[0] -1, x_bar.shape[1]))
     agent_positions = [PAPER_AGENT_POS] #, agent_pos, RANDOM_AGENT_POS_1, RANDOM_AGENT_POS_2, RANDOM_AGENT_POS_3, RANDOM_AGENT_POS_4, RANDOM_AGENT_POS_5, RANDOM_AGENT_POS_6]
     r_vals = [10, 8.5, 12, 14.5, 20]
+    plot_results = True
 
     for sim_run in range(len(agent_positions)):
         for r in r_vals:
             R = r
             curr_agent_pos = agent_positions[sim_run]
+            start_time = time()
             estimated_trajectory = np.array(trajectory_tracking(curr_agent_pos, x_bar, R))
+            print(f"Time taken for R = {R} with 125 node points: {time() - start_time}")
 
             # Calculate the error
             rmse = calculate_rmse(estimated_trajectory, x_bar[:, :2])
@@ -89,41 +93,42 @@ def main():
             hausdorff_distance = max(directed_hausdorff(estimated_trajectory, x_bar[:, :2])[0], directed_hausdorff(x_bar[:, :2], estimated_trajectory)[0])
             print(f"General Hausdorff Distance: {hausdorff_distance}")
 
-            # Plotting results
-            plt.figure()
+            if plot_results:
+                # Plotting results
+                plt.figure()
 
-            # Plotting reference and estimated trajectories
-            plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
-            plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
+                # Plotting reference and estimated trajectories
+                plt.plot(x_bar[:, 0], x_bar[:, 1], 'k-', label = "Reference Trajectory")
+                plt.plot(estimated_trajectory[:,0],estimated_trajectory[:,1],color = 'green',label = 'Estimated Trajectory')
 
-            # Plot the agents and the communication channels
-            adj_matrix = construct_matrix(curr_agent_pos,R=R)
-            first_line = True
-            for i in range(adj_matrix.shape[0]):
-                for j in range(adj_matrix.shape[1]):
-                    if adj_matrix[i,j] == 1:
-                        if first_line:
-                            first_line = False
-                            plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel", alpha = 0.25)
-                        else:
-                            plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', alpha = 0.25)
-            plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
+                # Plot the agents and the communication channels
+                adj_matrix = construct_matrix(curr_agent_pos,R=R)
+                first_line = True
+                for i in range(adj_matrix.shape[0]):
+                    for j in range(adj_matrix.shape[1]):
+                        if adj_matrix[i,j] == 1:
+                            if first_line:
+                                first_line = False
+                                plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', label = "Channel", alpha = 0.25)
+                            else:
+                                plt.plot([curr_agent_pos[i,0],curr_agent_pos[j,0]],[curr_agent_pos[i,1],curr_agent_pos[j,1]], color = 'blue', alpha = 0.25)
+                plt.plot(curr_agent_pos[:,0], curr_agent_pos[:,1], 'o', color = 'orange', label='Sensor (Agent) Position')
 
-            # Making the plot look nice
-            plt.legend()
-            plt.xlabel('X Coordinate (meters)')
-            plt.ylabel('Y Coordinate (meters)')
-            plt.title(f'Trajectory Tracking with SQP-CADMM, Connection Radius={R}')
-            plt.xlim(-25, 25)
-            plt.ylim(-25, 25)
-            plt.grid(True)
-            # plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
-            plt.savefig(f'data/trajectory_tracking_r_{R}.png')
-            plt.show()
+                # Making the plot look nice
+                plt.legend()
+                plt.xlabel('X Coordinate (meters)')
+                plt.ylabel('Y Coordinate (meters)')
+                plt.title(f'Trajectory Tracking with SQP-CADMM, Connection Radius={R}')
+                plt.xlim(-25, 25)
+                plt.ylim(-25, 25)
+                plt.grid(True)
+                # plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
+                plt.savefig(f'data/trajectory_tracking_r_{R}_{time()}.png')
+                plt.show()
 
 
-            # Make animation of the trajectories
-            make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
+                # Make animation of the trajectories
+                make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
 
 if __name__ == "__main__":
     main()

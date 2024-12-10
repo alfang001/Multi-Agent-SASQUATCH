@@ -25,3 +25,13 @@ def calculate_rmse(estimate, reference):
         float: RMSE
     """
     return np.sqrt(np.mean((estimate - reference)**2))
+
+def all_points_within_threshold(points, threshold):
+    # Compute the pairwise distances
+    pairwise_diff = points[:, np.newaxis, :] - points[np.newaxis, :, :]
+    pairwise_distances = np.sqrt(np.sum(pairwise_diff**2, axis=2))
+    
+    # Check if all distances are within the threshold
+    is_within_threshold = np.all(pairwise_distances <= threshold)
+    
+    return is_within_threshold

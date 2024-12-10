@@ -1,7 +1,8 @@
 import numpy as np
-from utils import f_derivative
+from utils import all_points_within_threshold, f_derivative
 
-def distributed_optimize(z, connectivity_matrix, weights, agent_pos, alpha_0 = 0.8, max_iter = 500):
+
+def distributed_optimize(z, connectivity_matrix, weights, agent_pos, alpha_0 = 0.8, max_iter = 500, error=0.1):
     sensing_range = 50
     def get_neighbors(adj_matrix, i):
     
@@ -33,6 +34,10 @@ def distributed_optimize(z, connectivity_matrix, weights, agent_pos, alpha_0 = 0
             #     new_x[i] = weighted_sum - alpha_k * f_derivative(local_estimates[j],agent_pos[j],z[j]).full().squeeze()
             #     # new_x[i] = weighted_sum - alpha_k * f_derivative(local_estimates[j],robot_positions[j],z_tilde[j]).full().squeeze()
         local_estimates = new_x  # Update the estimates for the next iteration
+
+        # If the difference between all the estimates is less than the error, break the loop
+        if bool(all_points_within_threshold(local_estimates, error)):
+            break
 
     estimated_pos = local_estimates
     indices = np.where(z<=sensing_range)[0]
