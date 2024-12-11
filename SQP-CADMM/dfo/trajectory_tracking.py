@@ -41,27 +41,27 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory, sensing_radius: flo
 
 def main():
     # Setting reference trajectory and parameters
-    # u_bar, x_bar = GenRef(2,2,Ns=50)
-    checkpoints = np.array([
-        [-15, 4.5],
-        [-8, 7],
-        [-4, 7],
-        [0, 6.8],
-        [4, 6.2],
-        [8, 5.5],
-        [8.3, 5.0],
-        [8.7, 4.5],
-        [11, 2.3],
-        [12.5, 0.0],
-        [11, -2.0],
-        [10, -7],
-        [7.5, -7.5],
-        [6, -7.4],
-        [5, -8],
-        [4, -7],
-        [2, -6]
-    ])
-    u_bar, x_bar = GenRef2(checkpoints,Ns=125)
+    u_bar, x_bar = GenRef(2,2,Ns=80)
+    # checkpoints = np.array([
+    #     [-15, 4.5],
+    #     [-8, 7],
+    #     [-4, 7],
+    #     [0, 6.8],
+    #     [4, 6.2],
+    #     [8, 5.5],
+    #     [8.3, 5.0],
+    #     [8.7, 4.5],
+    #     [11, 2.3],
+    #     [12.5, 0.0],
+    #     [11, -2.0],
+    #     [10, -7],
+    #     [7.5, -7.5],
+    #     [6, -7.4],
+    #     [5, -8],
+    #     [4, -7],
+    #     [2, -6]
+    # ])
+    # u_bar, x_bar = GenRef2(checkpoints,Ns=125)
     R=10 # Sensing radius
     N=15 # Number of agents
     T = len(x_bar) # Number of time steps
@@ -123,12 +123,11 @@ def main():
                 plt.ylim(-25, 25)
                 plt.grid(True)
                 # plt.savefig(f'data/trajectory_tracking_{sim_run + 1}.png')
-                plt.savefig(f'data/trajectory_tracking_r_{R}_{time()}.png')
+                plt.savefig(f'data/trajectory_tracking_r_{R}_start_from_-10_-15_w_out_break.png')
                 plt.show()
 
-
                 # Make animation of the trajectories
-                make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos)
+                make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos, filename=f'data/trajectory_tracking_r_{R}_start_from_-10_-15_w_out_break.mp4')
 
 if __name__ == "__main__":
     main()

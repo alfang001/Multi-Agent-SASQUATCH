@@ -8,10 +8,10 @@ from matplotlib.patches import Circle
 from PIL import Image
 
 
-def make_movie(trajectories, estimated_trajectories, agent_pos):
+def make_movie(trajectories, estimated_trajectories, agent_pos, filename="trajectories.mp4"):
     
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    out = cv2.VideoWriter('trajectories.mp4', fourcc, 3.0, (680, 480))
+    out = cv2.VideoWriter(filename, fourcc, 3.0, (680, 480))
     # TODO: Rename num_agents to num_vehicles since this is ref trajectory
     num_agents, num_steps, _ = trajectories.shape
     fig, ax = plt.subplots()
