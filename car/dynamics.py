@@ -41,7 +41,7 @@ def compute_measurements(agent_pos, ref_trajectory, noise = np.array([[0.1**2,0]
 
     return measurements
 
-def GenRef(alpha, beta, Ns = 500):
+def GenRef(alpha, beta, Ns = 500, start=np.array([0,0,0])):
         v_lim = [-10,10]
         delta_lim = [-0.8,0.8]
         Dim_state = 3
@@ -49,7 +49,7 @@ def GenRef(alpha, beta, Ns = 500):
         
         # generate a nominal trajectory
         x_bar = np.zeros((Ns + 1, Dim_state))
-        x_bar[0, :] = np.array([-10, -15, 0])
+        x_bar[0, :] = start
         # x_bar = np.zeros((Ns, Dim_state))
         u_bar = np.zeros((Ns    , Dim_ctrl))
 

@@ -39,6 +39,45 @@ def trajectory_tracking(agent_pos: np.array, ref_trajectory, sensing_radius: flo
         estimated_trajectory.append(estimated_coord)
     return estimated_trajectory
 
+def plot_ref_trajectories():
+    checkpoints = np.array([
+        [-15, 4.5],
+        [-8, 7],
+        [-4, 7],
+        [0, 6.8],
+        [4, 6.2],
+        [8, 5.5],
+        [8.3, 5.0],
+        [8.7, 4.5],
+        [11, 2.3],
+        [12.5, 0.0],
+        [11, -2.0],
+        [10, -7],
+        [7.5, -7.5],
+        [6, -7.4],
+        [5, -8],
+        [4, -7],
+        [2, -6]
+    ])
+    _, x_bar3 = GenRef(2,2,Ns=80, start=np.array([-10,-15,0]))
+    _, x_bar2 = GenRef(2,2,Ns=80)
+    _, x_bar = GenRef2(checkpoints,Ns=125)
+    ref_trajs = [x_bar, x_bar2, x_bar3]
+    # Plotting all reference trajectories
+    for idx in range(len(ref_trajs)):
+        ref_traj = ref_trajs[idx]
+        plt.figure()
+        plt.plot(ref_traj[:, 0], ref_traj[:, 1], 'k-', label = "Reference Trajectory")
+        plt.title(f"Reference Trajectory for Scenario {idx + 1}")
+        plt.xlabel('X Coordinate (meters)')
+        plt.ylabel('Y Coordinate (meters)')
+        plt.xlim(-25, 25)
+        plt.ylim(-25, 25)
+        plt.grid(True)
+        plt.legend()
+        plt.savefig(f'data/reference_trajectory_scenario_{idx + 1}.png')
+        plt.clf()
+
 def main():
     # Setting reference trajectory and parameters
     u_bar, x_bar = GenRef(2,2,Ns=80)
@@ -130,4 +169,5 @@ def main():
                 make_movie(np.array(x_bar).reshape(-1,len(x_bar),len(x_bar[0])), estimated_trajectory.reshape(-1,T,state_dim-1), curr_agent_pos, filename=f'data/trajectory_tracking_r_{R}_start_from_-10_-15_w_out_break.mp4')
 
 if __name__ == "__main__":
-    main()
+    # main()
+    plot_ref_trajectories()
